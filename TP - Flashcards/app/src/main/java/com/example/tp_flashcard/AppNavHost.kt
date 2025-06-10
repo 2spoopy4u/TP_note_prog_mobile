@@ -6,16 +6,14 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.tp_flashcard.flashcards.HomeViewModel
 
 @Composable
-fun FlashcardNavHost(
-    modifier: Modifier = Modifier
-) {
-    val navController = rememberNavController()
-
-    NavHost(navController = navController, startDestination = "home", modifier = modifier) {
-        composable("home") {
-           Text("Home")
+fun AppNavHost ( homeViewModel : HomeViewModel) {
+    val navController = rememberNavController ()
+    NavHost ( navController , startDestination = " home ") {
+        composable (" home ") {
+            HomeScreen ( homeViewModel = homeViewModel /** ... **/)
         }
     }
 }
