@@ -24,7 +24,8 @@ import com.example.tp_flashcard.flashcards.HomeViewModel
 
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    onCategoryClick: (FlashCardCategory) -> Unit
 ) {
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
@@ -45,7 +46,8 @@ fun HomeScreen(
         homeViewModel.getCategories().forEach { category ->
             CategoryItem(
                 modifier = Modifier,
-                category = category
+                category = category,
+                onCategoryClick = onCategoryClick
             )
         }
     }
@@ -55,10 +57,11 @@ fun HomeScreen(
 fun CategoryItem(
     modifier: Modifier = Modifier,
     category: FlashCardCategory,
+    onCategoryClick: (FlashCardCategory) -> Unit
 ) {
     Button(
         modifier = Modifier.fillMaxWidth(),
-        onClick = { },
+        onClick = {onCategoryClick(category)},
         colors = ButtonDefaults.buttonColors(containerColor = colorScheme.primary)
     ) {
         Text(
