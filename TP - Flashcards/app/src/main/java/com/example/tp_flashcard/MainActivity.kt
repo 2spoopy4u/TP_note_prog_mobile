@@ -19,17 +19,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.tp_flashcard.flashcards.FlashCardViewModel
 import com.example.tp_flashcard.flashcards.HomeViewModel
 import com.example.tp_flashcard.ui.theme.TP_FlashcardTheme
 
 class MainActivity : ComponentActivity() {
     private val homeViewModel : HomeViewModel by viewModels();
+    private val flashCardViewModel : FlashCardViewModel by viewModels();
 
     override fun onCreate ( savedInstanceState : Bundle ?) {
         super . onCreate ( savedInstanceState )
         setContent {
             TP_FlashcardTheme {
-                AppNavHost( homeViewModel = homeViewModel )
+                AppNavHost( homeViewModel = homeViewModel, flashCardViewModel = flashCardViewModel )
             }
         }
     }
