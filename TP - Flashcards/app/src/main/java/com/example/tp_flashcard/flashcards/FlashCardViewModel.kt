@@ -9,8 +9,10 @@ class FlashCardViewModel:ViewModel() {
     private val _uiState = MutableStateFlow(FlashcardUiState());
     val uiState: StateFlow<FlashcardUiState> = _uiState.asStateFlow();
 
-    fun getFlashCards(categoryId: Int): List<FlashCard> {
-        return FlashcardRepository.flashcards.filter{it.categoryId == categoryId}
+    fun getFlashCards(categoryId: Int){
+        _uiState.value = _uiState.value.copy(
+            cardList = FlashcardRepository.flashcards.filter{it.categoryId == categoryId}
+        )
     }
     fun nextCard(){
         val newId = _uiState.value.currentId +1
@@ -21,9 +23,17 @@ class FlashCardViewModel:ViewModel() {
         }
         else {
             _uiState.value = _uiState.value.copy(
-                currentId = newId
+                currentId = newId,
             )
         }
+    }
+    fun reset(categoryId: Int) {
+        val cards = FlashcardRepository.flashcards.filter { it.categoryId == categoryId }
+        _uiState.value = FlashcardUiState(
+            cardList = cards,
+            currentId = 0,
+            isSessionFinished = false
+        )
     }
     init {
 

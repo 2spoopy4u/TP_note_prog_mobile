@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TP_Flashcard</string>
+    <string name="next">next</string>
 </resources>

@@ -16,14 +16,23 @@ fun AppNavHost ( homeViewModel : HomeViewModel, flashCardViewModel:FlashCardView
         navController.navigate("flashCard/${category.id}"){
         }
     }
+    fun navToHomeScreen() {
+        navController.popBackStack(" home ", inclusive = false)
+    }
     NavHost ( navController , startDestination = " home ") {
         composable (" home ") {
             HomeScreen ( homeViewModel = homeViewModel, ::navToFlashScreen)
         }
         composable("flashCard/{categoryId}"){ backStackEntry->
-            val categoryId = backStackEntry.arguments?.getString("categoryId")
+            val categoryId = backStackEntry.arguments?.getString("categoryId")?.toIntOrNull()
+
             if (categoryId != null) {
-                FlashCardScreen( flashCardViewModel , categoryId = categoryId.toInt())
+                val flashCardViewModel: FlashCardViewModel = viewModel()
+                FlashCardScreen(
+                    flashCardViewModel = flashCardViewModel,
+                    categoryId = categoryId,
+                    navToHomeScreen = ::navToHomeScreen
+                )
             }
         }
 
