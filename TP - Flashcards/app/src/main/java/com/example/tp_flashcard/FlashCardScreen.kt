@@ -71,11 +71,6 @@ fun FlashCardScreen(
         }
         return
     }
-    val cardText = if (showAnswer.value) {
-        state.cardList[state.currentId].answer
-    } else {
-        state.cardList[state.currentId].question
-    }
 
     Column(
         modifier = Modifier
@@ -86,6 +81,7 @@ fun FlashCardScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         LinearProgressIndicator(
+            // progress doit être une fonction lambda car sinon c'est déprécié
             progress = {
                 (state.currentId + 1) / state.cardList.size.toFloat()
             },
@@ -145,7 +141,6 @@ fun FlashCard(
 
     val isFront = animatedRotationY <= 90f
 
-    val displayText = if (isFront) frontText else backText
     val backgroundColor = if (isFront) Color(0xFF2D9CDB) else Color(0xFF56CCF2) // Back is lighter
 
     Card(
@@ -173,7 +168,8 @@ fun FlashCard(
                     color = Color.White
                 )
             } else {
-                // Apply a reverse rotation so text is readable
+                // Le fait de retourner la flashcard retourne le texte avec
+                // du coup on applique une rotation au texte pour qu'il soit lisible
                 Text(
                     text = backText,
                     fontSize = 20.sp,
