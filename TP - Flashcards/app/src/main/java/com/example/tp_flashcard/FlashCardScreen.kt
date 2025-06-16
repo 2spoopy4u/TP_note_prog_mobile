@@ -1,27 +1,31 @@
 package com.example.tp_flashcard
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,15 +34,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tp_flashcard.flashcards.FlashCardViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun FlashCardScreen(
@@ -90,15 +96,25 @@ fun FlashCardScreen(
                 .padding(vertical = 8.dp),
         )
 
-        FlashCard(
+        AnimatedContent(
+            targetState = state.currentId,
+            transitionSpec = {
+                slideInHorizontally { width -> width } + fadeIn() togetherWith
+                        slideOutHorizontally { width -> -width } + fadeOut()
+
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
-            frontText = state.cardList[state.currentId].question,
-            backText = state.cardList[state.currentId].answer,
-            isShowingAnswer = showAnswer.value,
-            onCardClick = { showAnswer.value = !showAnswer.value }
-        )
+                .weight(1f)
+        ) { targetId ->
+            val card = state.cardList[targetId]
+            FlashCard(
+                frontText = card.question,
+                backText = card.answer,
+                isShowingAnswer = showAnswer.value,
+                onCardClick = { showAnswer.value = !showAnswer.value }
+            )
+        }
 
         Row(
             modifier = Modifier
@@ -132,21 +148,28 @@ fun FlashCard(
     onCardClick: () -> Unit
 ) {
     // Animate rotation for flip effect
-    val animatedRotationY by animateFloatAsState(
-        targetValue = if (isShowingAnswer) 180f else 0f,
-        animationSpec = tween(durationMillis = 400),
-        label = ""
-    )
+    val rotation = remember { Animatable(0f) }
+    val scope = rememberCoroutineScope()
+    val density = LocalDensity.current.density
 
 
-    val isFront = animatedRotationY <= 90f
+    LaunchedEffect(isShowingAnswer) {
+        val target = if (isShowingAnswer) 180f else 0f
+        scope.launch {
+            rotation.animateTo(
+                targetValue = target,
+                animationSpec = tween(durationMillis = 400)
+            )
+        }
+    }
 
-    val backgroundColor = if (isFront) Color(0xFF2D9CDB) else Color(0xFF56CCF2) // Back is lighter
+    val isFront = rotation.value <= 90f
+    val backgroundColor = if (isFront) Color(0xFF2D9CDB) else Color(0xFF56CCF2)
 
     Card(
         modifier = modifier
             .graphicsLayer {
-                rotationY = animatedRotationY
+                rotationY = rotation.value
                 cameraDistance = 12 * density
             }
             .fillMaxWidth()
