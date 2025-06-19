@@ -5,12 +5,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class HomeViewModel: ViewModel() {
-    private val _uiState = MutableStateFlow(FlashcardRepository);
-    val uiState: StateFlow<FlashcardRepository> = _uiState.asStateFlow();
-
+class HomeViewModel(private val flashCardRepository: FlashcardRepository): ViewModel() {
     fun getCategories(): List<FlashCardCategory> {
-        return _uiState.value.categories;
+        return flashCardRepository.getAllFlashCardCategoriesStream();
     }
 
     init {

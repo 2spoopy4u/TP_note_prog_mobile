@@ -5,13 +5,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class FlashCardViewModel:ViewModel() {
+class FlashCardViewModel(private val flashCardRepository: FlashcardRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(FlashcardUiState());
     val uiState: StateFlow<FlashcardUiState> = _uiState.asStateFlow();
 
     fun getFlashCards(categoryId: Int){
         _uiState.value = _uiState.value.copy(
-            cardList = FlashcardRepository.flashcards.filter{it.categoryId == categoryId}
+            cardList = flashCardRepository.getFlashCardByCategoryStream(categoryId),
         )
     }
     fun nextCard(){
@@ -28,7 +28,7 @@ class FlashCardViewModel:ViewModel() {
         }
     }
     fun reset(categoryId: Int) {
-        val cards = FlashcardRepository.flashcards.filter { it.categoryId == categoryId }
+        val cards = flashCardRepository.getFlashCardByCategoryStream(categoryId)
         _uiState.value = FlashcardUiState(
             cardList = cards,
             currentId = 0,
