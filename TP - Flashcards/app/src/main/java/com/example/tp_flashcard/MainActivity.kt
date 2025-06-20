@@ -19,19 +19,44 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
+import com.example.tp_flashcard.flashcards.FlashCardDatabase
 import com.example.tp_flashcard.flashcards.FlashCardViewModel
+import com.example.tp_flashcard.flashcards.FlashCardViewModelFactory
+import com.example.tp_flashcard.flashcards.FlashcardCategoryRepository
+import com.example.tp_flashcard.flashcards.FlashcardRepository
 import com.example.tp_flashcard.flashcards.HomeViewModel
+import com.example.tp_flashcard.flashcards.HomeViewModelFactory
 import com.example.tp_flashcard.ui.theme.TP_FlashcardTheme
 
 class MainActivity : ComponentActivity() {
-    private val homeViewModel : HomeViewModel by viewModels();
-    private val flashCardViewModel : FlashCardViewModel by viewModels();
+    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var flashCardViewModel: FlashCardViewModel
 
-    override fun onCreate ( savedInstanceState : Bundle ?) {
-        super . onCreate ( savedInstanceState )
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val database = FlashCardDatabase.getDatabase(this)
+
+        val homeRepository = FlashcardCategoryRepository(database.flashCardCategoryDao())
+        val flashcardRepository = FlashcardRepository(database.flashCardDao())
+
+        homeViewModel = ViewModelProvider(
+            this,
+            HomeViewModelFactory(homeRepository)
+        )[HomeViewModel::class.java]
+
+        flashCardViewModel = ViewModelProvider(
+            this,
+            FlashCardViewModelFactory(flashcardRepository)
+        )[FlashCardViewModel::class.java]
+
         setContent {
             TP_FlashcardTheme {
-                AppNavHost( homeViewModel = homeViewModel, flashCardViewModel = flashCardViewModel )
+                AppNavHost(
+                    homeViewModel = homeViewModel,
+                    flashCardViewModel = flashCardViewModel
+                )
             }
         }
     }

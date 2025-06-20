@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -35,8 +36,15 @@ android {
         compose = true
     }
 }
-
+val room_version: String by project
 dependencies {
+
+    //Room
+    implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
+    implementation(libs.androidx.room.common.jvm)
+    implementation("androidx.room:room-runtime:${libs.versions.room.get()}")
+    ksp("androidx.room:room-compiler:${libs.versions.room.get()}")
+    implementation(libs.androidx.room.ktx)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
