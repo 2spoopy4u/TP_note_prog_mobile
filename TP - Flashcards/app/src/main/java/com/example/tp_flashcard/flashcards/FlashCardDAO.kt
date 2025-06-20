@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FlashCardDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertFlashCard(flashCard: FlashCard)
+    suspend fun insertFlashCard(flashCard: FlashCard): Long
 
 
     @Update
@@ -20,24 +20,10 @@ interface FlashCardDAO {
     @Delete
     suspend fun deleteFlashCard(flashCard: FlashCard)
 
-    @Query("SELECT * from flashCards WHERE id = :id")
+    @Query("SELECT * from FlashCard WHERE id = :id")
     fun getFlashCard(id: Int): Flow<FlashCard>
 
-    @Query("SELECT * from flashCards WHERE categoryId = :categoryId")
-    fun getFlashCardByCategory(categoryId: Int): List<FlashCard>
-
-    abstract fun getAllFlashCards(): List<FlashCard>
-
-    abstract fun getAllFlashCardCategories(): List<FlashCardCategory>
-    abstract fun getFlashCardCategory(id: Int): FlashCardCategory?
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract fun insertFlashCardCategory(item: FlashCardCategory)
-
-    @Update
-    abstract fun updateFlashCardCategory(item: FlashCardCategory)
-
-    @Delete
-    abstract fun deleteFlashCardCategory(item: FlashCardCategory)
+    @Query("SELECT * from FlashCard WHERE categoryId = :categoryId")
+    fun getFlashCardByCategory(categoryId: Int): Flow<List<FlashCard>>
 
 }

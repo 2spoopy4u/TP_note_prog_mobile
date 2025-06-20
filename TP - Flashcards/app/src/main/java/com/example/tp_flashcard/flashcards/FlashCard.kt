@@ -10,7 +10,7 @@ data class FlashCard (
     // Identifier for the category this card belongs to
     // Text of the question shown to the user
     // Text of the answer revealed after flipping the card
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "categoryId") val categoryId: Int,
     @ColumnInfo(name = "question") val question: String,
     @ColumnInfo(name = "answer") val answer: String
@@ -21,7 +21,7 @@ data class FlashCard (
 data class FlashCardCategory (
     // Unique identifier for the category
     // Display name of the category
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "name") val name: String
 )
 

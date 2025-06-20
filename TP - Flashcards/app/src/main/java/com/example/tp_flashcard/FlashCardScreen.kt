@@ -50,20 +50,20 @@ fun FlashCardScreen(
 
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
     val showAnswer = remember { mutableStateOf(false) }
-    LaunchedEffect (key1 =categoryId)
-    {
-        flashCardViewModel.reset(categoryId)
-    }
+
     LaunchedEffect(state.currentId) {
         showAnswer.value = false
     }
-    if (state.isSessionFinished) {
-        // Navigue vers "home" et retire la route actuelle de la backstack
+    if (state.isLoading) {
+
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else if (state.isSessionFinished) {
         navToHomeScreen()
-        return // pour ne pas afficher les composants inutiles
+        return
     }
     if (state.cardList.isEmpty()) {
-        // Affiche un loader ou rien en attendant
         Card(
             modifier = Modifier.fillMaxSize(),
         ) {
@@ -81,7 +81,6 @@ fun FlashCardScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         LinearProgressIndicator(
-            // progress doit être une fonction lambda car sinon c'est déprécié
             progress = {
                 (state.currentId + 1) / state.cardList.size.toFloat()
             },
@@ -168,8 +167,6 @@ fun FlashCard(
                     color = Color.White
                 )
             } else {
-                // Le fait de retourner la flashcard retourne le texte avec
-                // du coup on applique une rotation au texte pour qu'il soit lisible
                 Text(
                     text = backText,
                     fontSize = 20.sp,
